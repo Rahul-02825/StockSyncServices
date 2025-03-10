@@ -1,0 +1,34 @@
+# POST http://localhost:8000/auth/register
+# Content-Type: application/json
+# # Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6IjY3Y2Q3ZTQ3MTM3M2M1ZmY4NDVjODBmZiIsImVtYWlsIjoiamQxMjNAZ21haWwuY29tIiwicm9sZSI6IkNVU1RPTUVSIiwiaWF0IjoxNzQxNjA0ODQyLCJleHAiOjE3NDE2MDg0NDJ9.hC5r_j4Qs1sT_5HKoYysY_tyAO6I0Y2xFmZbYjPjgW0
+
+# {
+#     "name": "warehouseUser",
+#     "email": "ware123@gmail.com",
+#     "password": "warehouseUser",
+#     "role": "WAREHOUSE_MANAGER"
+# }
+
+
+# POST http://localhost:8000/auth/login
+# Content-Type: application/json
+# # Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6IjY3Y2VjOTM5NzQzYjFjYmNiNTNiZDlhMCIsImVtYWlsIjoid2FyZTEyM0BnbWFpbC5jb20iLCJyb2xlIjoiV0FSRUhPVVNFX01BTkFHRVIiLCJpYXQiOjE3NDE2MDUyNDUsImV4cCI6MTc0MTYwODg0NX0.rOuZ9QE3Vl4ITilORmMySuihTNvT48mzz8iXXg5ZkY4
+
+# {
+#     "name": "warehouseUser",
+#     "email": "ware123@gmail.com",
+#     "password": "warehouseUser",
+#     "role": "WAREHOUSE_MANAGER"
+# }
+
+POST http://localhost:8000/users/createWarehouse
+Content-Type: application/json
+Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6IjY3Y2VjOTM5NzQzYjFjYmNiNTNiZDlhMCIsImVtYWlsIjoid2FyZTEyM0BnbWFpbC5jb20iLCJyb2xlIjoiV0FSRUhPVVNFX01BTkFHRVIiLCJpYXQiOjE3NDE2MjI4NzAsImV4cCI6MTc0MTYyNjQ3MH0.WdByRUIKm-RQilu6DxyLjBZ_HD38hYOfbff4kq2UtlI
+
+{
+    "name":"warehouse3",
+    "location":"chennai",
+    "capacity":100
+}
+
+
