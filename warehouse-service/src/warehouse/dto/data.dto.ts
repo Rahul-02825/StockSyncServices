@@ -15,8 +15,8 @@ export class CreateWarehouseDto {
   @IsNumber()
   capacity: number;
 
-  @IsString()
-  userID:string
+  // @IsString()
+  // userID:string
 
 //   @IsArray()
 //   @ArrayMinSize(1) // Ensure at least one supplier is provided

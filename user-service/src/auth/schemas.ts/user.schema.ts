@@ -1,5 +1,5 @@
 import {Prop,Schema,SchemaFactory} from '@nestjs/mongoose'
-import { Document } from 'mongoose'
+import { Document, Types } from 'mongoose'
 export type UserDocument = User & Document
 
 
@@ -32,5 +32,6 @@ export class User{
         defualt:Date.now()
     })
     UpdatedAt :Date
+
 }
 export const UserSchema = SchemaFactory.createForClass(User);

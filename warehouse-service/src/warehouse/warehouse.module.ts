@@ -9,7 +9,7 @@ import { Warehouse, WarehouseSchema } from './entities/warehouse.entity';
   imports: [
     ClientsModule.register([
       {
-        name: 'WAREHOUSE_SERVICE',
+        name: 'WAREHOUSE-SERVICE',
         transport: Transport.RMQ,
         options: {
           urls: ['amqp://localhost:5672'],
