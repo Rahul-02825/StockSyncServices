@@ -20,7 +20,7 @@ async function bootstrap() {
   });
 
   await microservice.listen();
-  console.log('📡 user Service is listening for RabbitMQ events...');
+  console.log('📡 warehouse Service is listening for RabbitMQ events...');
 }
 
 bootstrap();

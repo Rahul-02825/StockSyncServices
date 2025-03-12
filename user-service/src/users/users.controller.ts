@@ -14,32 +14,28 @@ import { JwtAuthGaurd } from 'src/common/gaurds/jwt-auth.guard';
 import { RolesGaurd } from 'src/common/gaurds/roles.guard';
 import { CreateWarehouseDto } from './dto/data.dto';
 import { Roles } from 'src/common/decorator/roles.decorator';
-import { ClientProxy } from '@nestjs/microservices';
+import { ClientProxy, EventPattern, Payload } from '@nestjs/microservices';
 
-@Controller('users')
+export interface QueueDto{
+  warehouseId:string,
+  userId:string
+}
+@Controller()
 export class UsersController {
   constructor(
     private readonly usersService: UsersService,
-    @Inject('WAREHOUSE-SERVICE') private readonly warehouseClient: ClientProxy,
   ) {}
-  // post request for creating a new ware house from the userService to wareHouseService
-  @Post('/createWarehouse')
-  @UseGuards(JwtAuthGaurd, RolesGaurd)
-  @Roles('WAREHOUSE_MANAGER')
-  @UsePipes(new ValidationPipe())
-  async createWarehouse(
-    @Body() createWarehouseDto: CreateWarehouseDto,
-    @Req() req,
-  ) {
-    const userId = req.user.id;
-    const payload = { ...createWarehouseDto, userId: userId };
-
-    // Ensure RabbitMQ is connected before emitting
-    await this.warehouseClient.connect();
-
-    // emmiting data to warehouse service
-    this.warehouseClient.emit('warehouse-create', payload);
+  // handled the warehouse created event in the warehouse service
+  @EventPattern('warehouse-create')
+  async handleWarehouseCreated(@Payload() queueDto:QueueDto){
+    try{
+      await this.usersService.handleWarehouseCreated(queueDto)
+      console.log("connected with warehouse service via userservice")
+    }
+    catch(err){
+      console.log("error in connecting warehouse and userservice")
+    }
     
-    return { message: 'create warehouse request is sent' };
   }
+  
 }

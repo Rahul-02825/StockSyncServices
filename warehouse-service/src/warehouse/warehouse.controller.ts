@@ -42,7 +42,6 @@ export class WarehouseController {
     @Body() createWarehouseDto: CreateWarehouseDto,
     @Req() req,
   ) {
-    console.log('Received message:', createWarehouseDto);
     const userId = req.user.id;
     const warehousePayload = {
       ...createWarehouseDto,

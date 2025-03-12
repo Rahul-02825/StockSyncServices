@@ -24,7 +24,8 @@ export class WarehouseService {
     await this.warehouseClient.connect()
     // Emit warehouse id  to userService to facilitate many to many relationship through rabbitmq
     this.warehouseClient.emit('warehouse-create',{
-      warehouseId : warehouseMetaData._id
+      warehouseId : warehouseMetaData._id,
+      userId:warehouseMetaData.admin
     })
     return { message: 'warehouse created successfully'};
   }

@@ -22,6 +22,12 @@ export class User{
     role : rolesEnum
 
     @Prop({
+        type:[{type:Types.ObjectId}]
+    })
+    warehouses:Types.ObjectId[]
+
+
+    @Prop({
         type:Date,
         default:Date.now()
     })

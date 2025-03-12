@@ -6,8 +6,8 @@ async function bootstrap() {
   // 🚀 Start the HTTP API server
   const app = await NestFactory.create(AppModule);
   app.enableCors();
-  await app.listen(8001); // Change port if needed
-  console.log('🚀 Warehouse Service HTTP API running on http://localhost:8000');
+  await app.listen(8000); // Change port if needed
+  console.log('🚀 user Service HTTP API running on http://localhost:8000');
 
   // 📡 Start the RabbitMQ microservice listener
   const microservice = await NestFactory.createMicroservice<MicroserviceOptions>(AppModule, {
