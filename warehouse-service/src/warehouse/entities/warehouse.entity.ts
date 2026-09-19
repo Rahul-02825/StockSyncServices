@@ -1,14 +1,14 @@
 import { Prop, Schema, SchemaFactory } from '@nestjs/mongoose';
-import { Document, Types } from 'mongoose';
+import { Document, Schema as MongooseSchema, Types } from 'mongoose';
 
 
 export type WarehouseDocument = Warehouse & Document
 
 @Schema({ timestamps: true }) // Adds createdAt and updatedAt fields
 export class Warehouse extends Document {
-  
 
-  @Prop({type:Types.ObjectId, required:true})
+
+  @Prop({type:MongooseSchema.Types.ObjectId, required:true})
   admin:Types.ObjectId
 
   @Prop({ required: true })
@@ -20,18 +20,18 @@ export class Warehouse extends Document {
   @Prop({ required: true })
   capacity: number;
 
-  @Prop({ type: [{ type: Types.ObjectId }] })
+  @Prop({ type: [{ type: MongooseSchema.Types.ObjectId }] })
   suppliers: Types.ObjectId[];
 
   @Prop({
     type:[{
-      supplierId:Types.ObjectId,
+      supplierId:{type:MongooseSchema.Types.ObjectId},
       requestCapacity:Number,
-      status:String
+      status:{type:String, enum:['PENDING','APPROVED','REJECTED'], default:'PENDING'}
     }],
     default:[]
   })
-  requests:{supplierId:Types.ObjectId;requestCapacity:Number;status:string}[];
+  requests:{_id:Types.ObjectId;supplierId:Types.ObjectId;requestCapacity:Number;status:string}[];
 
 }
 

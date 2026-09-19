@@ -1,6 +1,4 @@
-import { IsNotEmpty, IsString, IsNumber, IsArray, IsMongoId, ArrayMinSize } from 'class-validator';
-import { Type } from 'class-transformer';
-import { Types } from 'mongoose';
+import { IsNotEmpty, IsString, IsNumber, IsEnum, IsPositive } from 'class-validator';
 
 export class CreateWarehouseDto {
   @IsNotEmpty()
@@ -14,12 +12,41 @@ export class CreateWarehouseDto {
   @IsNotEmpty()
   @IsNumber()
   capacity: number;
+}
 
-  // @IsString()
-  // userID:string
+export enum RequestStatus {
+  PENDING = 'PENDING',
+  APPROVED = 'APPROVED',
+  REJECTED = 'REJECTED',
+}
 
-//   @IsArray()
-//   @ArrayMinSize(1) // Ensure at least one supplier is provided
-//   @IsMongoId({ each: true }) // Ensure each element is a valid MongoDB ObjectId
-//   suppliers: Types.ObjectId[];
+export class RequestWarehouseDto {
+  @IsNotEmpty()
+  @IsNumber()
+  @IsPositive()
+  requestCapacity: number;
+}
+
+export class UpdateRequestStatusDto {
+  @IsNotEmpty()
+  @IsEnum(RequestStatus, { message: 'status must be APPROVED or REJECTED' })
+  status: RequestStatus;
+}
+
+export class StockUpdatedEventDto {
+  @IsNotEmpty()
+  @IsString()
+  supplierId: string;
+
+  @IsNotEmpty()
+  @IsString()
+  sku: string;
+
+  @IsNotEmpty()
+  @IsString()
+  productName: string;
+
+  @IsNotEmpty()
+  @IsNumber()
+  quantity: number;
 }

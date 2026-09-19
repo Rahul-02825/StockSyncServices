@@ -1,4 +1,5 @@
 import { Injectable, UnauthorizedException } from '@nestjs/common';
+import { ConfigService } from '@nestjs/config';
 import { Model } from 'mongoose';
 import { InjectModel } from '@nestjs/mongoose';
 import * as bcrypt from 'bcryptjs';
@@ -8,9 +9,10 @@ import { UserDto } from './dto/user.dto';
 import { loginDto } from './dto/login.dto';
 @Injectable()
 export class AuthService {
-  private JWT_SECRET = 'SECRET_KEY';
-
-  constructor(@InjectModel(User.name) private userModel: Model<UserDocument>) {}
+  constructor(
+    @InjectModel(User.name) private userModel: Model<UserDocument>,
+    private readonly configService: ConfigService,
+  ) {}
 
   register = async (userDto: UserDto) => {
     const { name, email, password, role } = userDto;
@@ -27,19 +29,18 @@ export class AuthService {
   };
 
   login = async (loginDto: loginDto) => {
-    const { name, email, password } = loginDto;
-    console.log(loginDto)
+    const { email, password } = loginDto;
     const checkUser = await this.userModel.findOne({ email });
     if (!checkUser) throw new UnauthorizedException('no such user !!');
     const passwordValid = await bcrypt.compare(password, checkUser.password);
     if (!passwordValid) throw new UnauthorizedException('incorrect password');
 
     // generate token
-
+    const expiresIn = (this.configService.get<string>('JWT_EXPIRES_IN') ?? '1h') as jwt.SignOptions['expiresIn'];
     const token = jwt.sign(
       { id: checkUser._id, email: checkUser.email, role: checkUser.role },
-      this.JWT_SECRET,
-      { expiresIn: '1h' },
+      this.configService.getOrThrow<string>('JWT_SECRET'),
+      { expiresIn },
     );
     return { accessToken: token };
   };

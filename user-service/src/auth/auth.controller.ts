@@ -14,7 +14,8 @@ export class AuthController {
         return this.authService.register(userDto)
     }   
 
-    @Post('login')  
+    @Post('login')
+    @UsePipes(new ValidationPipe())
     async login(@Body() loginDto:loginDto){
         return this.authService.login(loginDto)
     }

@@ -4,11 +4,14 @@ import {
   UnauthorizedException,
   ExecutionContext,
 } from '@nestjs/common';
+import { ConfigService } from '@nestjs/config';
 import * as jwt from 'jsonwebtoken';
 import { Observable } from 'rxjs';
 import {customRequest} from '../interfaces'
 @Injectable()
 export class JwtAuthGaurd implements CanActivate {
+  constructor(private readonly configService: ConfigService) {}
+
   canActivate(
     context: ExecutionContext,
   ): boolean | Promise<boolean> | Observable<boolean> {
@@ -18,10 +21,10 @@ export class JwtAuthGaurd implements CanActivate {
     if (!authorizationToken || !authorizationToken.startsWith('Bearer'))
       throw new UnauthorizedException(
         'access denies no user exist or token expired',
-      );    
+      );
       const token = authorizationToken.split(' ')[1]
       try{
-        const decoded = jwt.verify(token,'SECRET_KEY')
+        const decoded = jwt.verify(token, this.configService.getOrThrow<string>('JWT_SECRET'))
         request.user = decoded
         return true
       }

@@ -1,10 +1,10 @@
 import {Prop,Schema,SchemaFactory} from '@nestjs/mongoose'
-import { Document, Types } from 'mongoose'
+import { Document, Schema as MongooseSchema, Types } from 'mongoose'
 export type UserDocument = User & Document
 
 
 import {rolesEnum} from '../dto/user.dto'
-@Schema()
+@Schema({ timestamps: true })
 export class User{
     @Prop({required:true})
     name:string
@@ -22,22 +22,14 @@ export class User{
     role : rolesEnum
 
     @Prop({
-        type:[{type:Types.ObjectId}]
+        type:[{type:MongooseSchema.Types.ObjectId}]
     })
     warehouses:Types.ObjectId[]
 
-
     @Prop({
-        type:Date,
-        default:Date.now()
+        type:MongooseSchema.Types.ObjectId
     })
-    createdAt:Date
-
-    @Prop({
-        type:Date,
-        defualt:Date.now()
-    })
-    UpdatedAt :Date
+    supplierProfile:Types.ObjectId
 
 }
 export const UserSchema = SchemaFactory.createForClass(User);

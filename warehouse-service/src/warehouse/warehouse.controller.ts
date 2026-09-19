@@ -3,19 +3,16 @@ import {
   Get,
   Post,
   Body,
-  Patch,
   Param,
-  Delete,
   UseGuards,
   Req,
   UsePipes,
   ValidationPipe,
-  Inject,
   Put,
 } from '@nestjs/common';
 import { WarehouseService } from './warehouse.service';
-import { CreateWarehouseDto } from './dto/data.dto';
-import { EventPattern } from '@nestjs/microservices';
+import { CreateWarehouseDto, RequestWarehouseDto, StockUpdatedEventDto, UpdateRequestStatusDto } from './dto/data.dto';
+import { EventPattern, Payload } from '@nestjs/microservices';
 import { JwtAuthGaurd } from 'src/common/gaurds/jwt-auth.guard';
 import { RolesGaurd } from 'src/common/gaurds/roles.guard';
 import { Roles } from 'src/common/decorator/roles.decorator';
@@ -23,12 +20,10 @@ import { Roles } from 'src/common/decorator/roles.decorator';
 @Controller('warehouse')
 export class WarehouseController {
   constructor(private readonly warehouseService: WarehouseService) {}
-  // @EventPattern('warehouse-create')
 
   @Get('/get')
   @UseGuards(JwtAuthGaurd, RolesGaurd)
   @Roles('WAREHOUSE_MANAGER')
-  @UsePipes(new ValidationPipe())
   async getWarehouse(@Req() req) {
     const userId = req.user.id;
     return this.warehouseService.getWarehouse(userId);
@@ -43,11 +38,10 @@ export class WarehouseController {
     @Req() req,
   ) {
     const userId = req.user.id;
-    const warehousePayload = {
+    return this.warehouseService.createWarehouse({
       ...createWarehouseDto,
       admin: userId,
-    };
-    return this.warehouseService.createWarehouse(warehousePayload);
+    });
   }
 
   @Put('/request/:warehouseId')
@@ -55,21 +49,43 @@ export class WarehouseController {
   @Roles('SUPPLIER')
   @UsePipes(new ValidationPipe())
   async requestWarehouse(
-    @Param('warehouseId')
-    warehouseId: string,
-    @Body()
-    requestWarehouseDto: {
-      requestCapacity?: number;
-      status?: string;
-    },
+    @Param('warehouseId') warehouseId: string,
+    @Body() requestWarehouseDto: RequestWarehouseDto,
     @Req() req,
   ) {
     const supplierId = req.user.id;
-    const requestPayload = {
-      ...requestWarehouseDto,
-      supplierId,
-    };
-    console.log(requestPayload);
-    return this.warehouseService.requestWarehouse(warehouseId, requestPayload);
+    return this.warehouseService.requestWarehouse(warehouseId, supplierId, requestWarehouseDto);
+  }
+
+  @Put('/:warehouseId/requests/:requestId')
+  @UseGuards(JwtAuthGaurd, RolesGaurd)
+  @Roles('WAREHOUSE_MANAGER')
+  @UsePipes(new ValidationPipe())
+  async updateRequestStatus(
+    @Param('warehouseId') warehouseId: string,
+    @Param('requestId') requestId: string,
+    @Body() updateRequestStatusDto: UpdateRequestStatusDto,
+  ) {
+    return this.warehouseService.updateRequestStatus(
+      warehouseId,
+      requestId,
+      updateRequestStatusDto.status,
+    );
+  }
+
+  @Get('/:warehouseId/stock')
+  @UseGuards(JwtAuthGaurd, RolesGaurd)
+  @Roles('WAREHOUSE_MANAGER')
+  async getWarehouseStock(@Param('warehouseId') warehouseId: string) {
+    return this.warehouseService.getWarehouseStock(warehouseId);
+  }
+
+  @EventPattern('stock-updated')
+  async handleStockUpdated(@Payload() event: StockUpdatedEventDto) {
+    try {
+      await this.warehouseService.handleStockUpdated(event);
+    } catch (err) {
+      console.log('error handling stock-updated event', err);
+    }
   }
 }

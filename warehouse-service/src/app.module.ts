@@ -2,11 +2,21 @@ import { Module } from '@nestjs/common';
 import { AppController } from './app.controller';
 import { AppService } from './app.service';
 import { WarehouseModule } from './warehouse/warehouse.module';
+import { ConfigModule, ConfigService } from '@nestjs/config';
 import { MongooseModule } from '@nestjs/mongoose';
 
 @Module({
-  imports: [MongooseModule.forRoot("mongodb+srv://rahul:Rahul28@cluster0.ytu98.mongodb.net/StockSync?retryWrites=true&w=majority&appName=Cluster0", {
-  }),WarehouseModule],
+  imports: [
+    ConfigModule.forRoot({ isGlobal: true }),
+    MongooseModule.forRootAsync({
+      imports: [ConfigModule],
+      inject: [ConfigService],
+      useFactory: (configService: ConfigService) => ({
+        uri: configService.get<string>('MONGO_URI'),
+      }),
+    }),
+    WarehouseModule,
+  ],
   controllers: [AppController],
   providers: [AppService],
 })

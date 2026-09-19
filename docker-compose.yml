@@ -1,0 +1,51 @@
+version: '3.8'
+
+# MongoDB is Atlas-hosted (one database per service) so it's not part of this
+# compose file. This wires up RabbitMQ plus all three services for local dev.
+services:
+  rabbitmq:
+    image: rabbitmq:3-management-alpine
+    ports:
+      - '5672:5672'
+      - '15672:15672'
+    healthcheck:
+      test: ['CMD', 'rabbitmq-diagnostics', '-q', 'ping']
+      interval: 10s
+      timeout: 5s
+      retries: 5
+
+  user-service:
+    build: ./user-service
+    env_file:
+      - ./user-service/.env
+    environment:
+      - RABBITMQ_URL=amqp://rabbitmq:5672?frameMax=8192
+    ports:
+      - '8000:8000'
+    depends_on:
+      rabbitmq:
+        condition: service_healthy
+
+  warehouse-service:
+    build: ./warehouse-service
+    env_file:
+      - ./warehouse-service/.env
+    environment:
+      - RABBITMQ_URL=amqp://rabbitmq:5672?frameMax=8192
+    ports:
+      - '8001:8001'
+    depends_on:
+      rabbitmq:
+        condition: service_healthy
+
+  supplier-service:
+    build: ./supplier-service
+    env_file:
+      - ./supplier-service/.env
+    environment:
+      - RABBITMQ_URL=amqp://rabbitmq:5672?frameMax=8192
+    ports:
+      - '8002:8002'
+    depends_on:
+      rabbitmq:
+        condition: service_healthy
